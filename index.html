@@ -152,6 +152,14 @@ dd{margin:0;font-weight:600}
 .row2 small{display:block;color:var(--mu)}
 .pbs{width:28px;height:28px;flex:none}
 .pv{display:block;height:90px;margin-top:6px;border-radius:8px;object-fit:cover}
+/* Formulario del panel: texto más grande y legible */
+#form .fgrid{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+#form label{font-size:1rem;color:var(--wh);gap:8px}
+#form input,#form select,#form textarea{font-size:1.1rem;padding:.75rem .9rem}
+#form input[type=color]{height:52px;padding:4px}
+#form textarea{min-height:130px;line-height:1.5}
+#form .pv{height:150px}
+#form h3{font-size:1.4rem}
 /* Movimiento reducido */
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
@@ -364,7 +372,7 @@ function renderHome(){
       <p class="lead">${esc(h.description)}</p>
       <div class="acts"><button class="pri" data-open="${esc(h.id)}">Descubrir</button>${favBtn(h.id)}</div>
     </div></div>`:'';
-  $('#rows').innerHTML=SECS.map(([id,title,fn,sort])=>{
+  $('#rows').innerHTML=!DB.length?`<div class="empty" style="padding:80px 5vw">${PB}<h3>Aún no hay proyectos</h3><p>Añade el primero desde el panel de administración.</p></div>`:SECS.map(([id,title,fn,sort])=>{
     const list=DB.filter(fn).sort((a,b)=>sort==='date'?b.releaseDate.localeCompare(a.releaseDate):b.popularity-a.popularity);
     if(!list.length) return '';
     return `<section class="sec" id="${id}">
@@ -498,7 +506,7 @@ function showPanel(){
   renderAdmin();fillForm(null);
 }
 async function publish(){
-  if(!S) return;
+  if(!S){toast('Conecta con GitHub para publicar.');return}
   const btn=$('#pPub');btn.disabled=true;
   try{
     for(const g of DB) for(const f of ['cover','banner']){
@@ -526,7 +534,7 @@ document.addEventListener('click',e=>{
   const f=t.closest('[data-fav]');     if(f){toggleFav(f.dataset.fav,f);return}
   const d=t.closest('[data-dir]');     if(d){const row=d.closest('.sec').querySelector('.row');row.scrollBy({left:+d.dataset.dir*row.clientWidth*.8,behavior:'smooth'});return}
   const ed=t.closest('[data-edit]');   if(ed){EDIT=ed.dataset.edit;const g=DB.find(x=>x.id===EDIT);fillForm(g);$('#fTitle').textContent='Editando: '+g.title;$('#form').scrollIntoView({behavior:'smooth'});return}
-  const dl=t.closest('[data-del]');    if(dl&&confirm('¿Eliminar este juego del catálogo?')){DB=DB.filter(g=>g.id!==dl.dataset.del);EDIT=null;fillForm(null);sync();return}
+  const dl=t.closest('[data-del]');    if(dl){if(dl.dataset.armed){DB=DB.filter(g=>g.id!==dl.dataset.del);EDIT=null;fillForm(null);sync();toast('Eliminado. Pulsa «Publicar en GitHub» para aplicarlo en la web.');return}dl.dataset.armed='1';dl.textContent='¿Seguro?';dl.classList.add('pri');setTimeout(()=>{delete dl.dataset.armed;dl.textContent='Eliminar';dl.classList.remove('pri')},3000);return}
   if(t.closest('#reset')){['q','fConsole','fLang','fAuthor','fGenre','fCat','fStatus'].forEach(id=>$('#'+id).value='');renderExplore();return}
 });
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.classList?.contains('card'))openGame(e.target.dataset.id)});
@@ -571,7 +579,7 @@ $('#form').addEventListener('submit',e=>{
   else DB.push({id:slug(d.title)+'-'+Date.now().toString(36),...d});
   EDIT=null;fillForm(null);$('#fTitle').textContent='Nuevo juego';
   sync();
-  toast(S?'Guardado. Pulsa «Publicar en GitHub» para enviarlo.':'Guardado en modo local.');
+  toast(S?'Guardado. Pulsa «Publicar en GitHub» para enviarlo a la web.':'Guardado solo en esta pestaña. Conecta con GitHub para que llegue a la web.');
 });
 
 window.addEventListener('hashchange',route);
