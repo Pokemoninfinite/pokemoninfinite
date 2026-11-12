@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>POKÉMON INFINITE</title>
+<style>
+:root{--bg:#07080d;--pn:#0f1322;--ln:rgba(255,255,255,.09);--red:#e3350d;--blue:#2fb8ff;--pur:#8b5cf6;--wh:#f5f7ff;--mu:#8e95ab}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--wh);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+h1,h2,h3{font-family:"Trebuchet MS",system-ui,sans-serif;font-weight:800;letter-spacing:.02em}
+a{color:inherit}
+[data-pb] svg{width:100%;height:100%;display:block}
+.hid{display:none!important}
+.mu{color:var(--mu);font-size:.9rem}
+button,.btn{font:inherit;color:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:8px;justify-content:center;text-decoration:none;border:1px solid var(--ln);background:rgba(255,255,255,.05);border-radius:10px;padding:.6rem 1.05rem;transition:transform .15s,background .25s,box-shadow .25s,border-color .25s}
+button:hover,.btn:hover{background:rgba(255,255,255,.12);border-color:rgba(47,184,255,.6);box-shadow:0 0 18px rgba(47,184,255,.25)}
+button:active,.btn:active{transform:scale(.96)}
+.pri{background:var(--red);border-color:var(--red)}
+.pri:hover{background:#ff4a2a;border-color:#ff4a2a;box-shadow:0 0 24px rgba(227,53,13,.55)}
+button.on{border-color:var(--red)}
+[disabled]{opacity:.35;pointer-events:none;box-shadow:none}
+input,select,textarea{font:inherit;color:inherit;background:var(--pn);border:1px solid var(--ln);border-radius:10px;padding:.55rem .75rem;width:100%;outline:none;transition:border-color .2s,box-shadow .2s}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(47,184,255,.15)}
+label{display:grid;gap:6px;font-size:.8rem;color:var(--mu)}
+.chk{display:flex;align-items:center;gap:8px;color:var(--wh)}
+.chk input{width:auto}
+.acts{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
+.heart{width:18px;height:18px}
+.heart path{fill:none;stroke:currentColor;stroke-width:2.2}
+.on .heart path{fill:var(--red);stroke:var(--red)}
+.pop .heart{animation:pop .5s}
+@keyframes pop{30%{transform:scale(1.45)}}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+/* Cargador */
+#loader{position:fixed;inset:0;z-index:99;background:var(--bg);display:grid;place-items:center;transition:opacity .45s}
+#loader.off{opacity:0;pointer-events:none}
+.track{position:relative;width:180px;height:56px}
+.track::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,transparent,var(--blue),transparent)}
+.track .ball{position:absolute;top:4px;width:44px;height:44px;animation:roll 1.6s ease-in-out infinite;filter:drop-shadow(0 0 8px rgba(47,184,255,.8))}
+@keyframes roll{0%{left:0;transform:rotate(0)}50%{left:128px;transform:rotate(540deg)}100%{left:0;transform:rotate(1080deg)}}
+/* Introducción */
+#intro{position:fixed;inset:0;z-index:98;display:grid;place-items:center;background:radial-gradient(circle,#1a2040,var(--bg) 70%);transition:opacity .4s}
+#intro.off{opacity:0;pointer-events:none}
+#intro .stage{position:relative;width:120px;height:120px;display:grid;place-items:center}
+#intro .ib{grid-area:1/1;width:120px;height:120px;animation:drop .7s cubic-bezier(.3,1.5,.5,1) both}
+#intro .flash{grid-area:1/1;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,#fff 0,rgba(47,184,255,.8) 35%,transparent 70%);opacity:0;animation:flash .6s .7s forwards}
+#intro .logo{position:absolute;top:150%;left:50%;transform:translateX(-50%);white-space:nowrap;letter-spacing:.3em;font-family:"Trebuchet MS",system-ui,sans-serif;font-size:clamp(1.1rem,4vw,1.8rem);opacity:0;animation:fadein .5s .9s forwards}
+#intro .skip{position:absolute;bottom:24px;right:24px}
+@keyframes drop{0%{transform:translateY(-70px) scale(.7);opacity:0}60%{transform:translateY(6px)}100%{transform:none;opacity:1}}
+@keyframes flash{0%{opacity:0;transform:scale(.4)}40%{opacity:1;transform:scale(1.3)}100%{opacity:0;transform:scale(1.8)}}
+/* Navegación */
+.nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:16px;padding:12px 4vw;background:rgba(7,8,13,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--ln);animation:fadein .8s both}
+.brand{display:flex;align-items:center;gap:8px;white-space:nowrap;text-decoration:none;font-family:"Trebuchet MS",system-ui,sans-serif;font-weight:800;letter-spacing:.12em}
+.brand .pb{width:22px;height:22px}
+.brand b{color:var(--blue)}
+.links{display:flex;gap:18px;overflow-x:auto;scrollbar-width:none;flex:1}
+.links::-webkit-scrollbar{display:none}
+.links a{color:var(--mu);text-decoration:none;white-space:nowrap;font-size:.88rem;padding:6px 0;position:relative;transition:color .2s}
+.links a:hover,.links a.on{color:var(--wh)}
+.links a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--blue);transform:scaleX(0);transition:transform .3s}
+.links a:hover::after,.links a.on::after{transform:scaleX(1)}
+#navq{width:170px;padding:.4rem .7rem}
+@media (max-width:700px){.nav{padding:10px 4vw;gap:10px}#navq{width:110px}.brand{font-size:.8rem}}
+/* Hero */
+.hero{position:relative;min-height:min(80vh,660px);display:flex;align-items:flex-end;overflow:hidden;padding:110px 5vw 9vh}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(70% 90% at 72% 30%,var(--hc),transparent 62%),#0a0c16;animation:fadein 1.5s both}
+.hero-bg img{width:100%;height:100%;object-fit:cover;opacity:.55}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--bg) 8%,rgba(7,8,13,.5) 55%,transparent),linear-gradient(0deg,var(--bg) 4%,transparent 50%)}
+.hero-pb{position:absolute;right:-6vw;top:50%;width:min(44vw,460px);opacity:.09;z-index:1;transform:translateY(-50%);animation:spin 40s linear infinite}
+@keyframes spin{from{transform:translateY(-50%) rotate(0)}to{transform:translateY(-50%) rotate(360deg)}}
+.hero-txt{position:relative;z-index:2;max-width:620px;animation:rise .9s .25s both}
+.hero h1{font-size:clamp(2.2rem,6vw,4.4rem);line-height:1;margin:8px 0}
+.eyebrow{color:var(--blue);text-transform:uppercase;letter-spacing:.18em;font-size:.75rem;font-weight:700}
+.meta2{color:var(--mu)}
+.lead{color:#c9cee0;max-width:52ch;margin:10px 0 18px}
+/* Carruseles */
+.sec{padding:18px 0 4px;scroll-margin-top:70px}
+.sh{display:flex;justify-content:space-between;align-items:end;padding:0 5vw;margin-bottom:6px}
+.sh h2{font-size:1.2rem}
+.arrows button{padding:.3rem .75rem;border-radius:99px}
+.row{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:10px 5vw 26px;scrollbar-width:none}
+.row::-webkit-scrollbar{display:none}
+.row .card{flex:0 0 clamp(150px,16vw,210px);scroll-snap-align:start}
+/* Tarjetas */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:18px}
+.grid .card{width:100%}
+.card{position:relative;aspect-ratio:2/3;border-radius:14px;overflow:hidden;cursor:pointer;border:1px solid var(--ln);background:#0b0d18;outline:none;animation:rise .6s var(--d,0ms) both;transition:transform .4s cubic-bezier(.2,.8,.2,1),box-shadow .4s,border-color .4s}
+.card:hover,.card:focus-visible{transform:translateY(-8px) scale(1.03);border-color:rgba(47,184,255,.7);box-shadow:0 22px 46px rgba(0,0,0,.7),0 0 26px rgba(47,184,255,.25)}
+.cov{position:absolute;inset:0;background:linear-gradient(165deg,var(--c,#333),#0b0d18 78%);transition:transform .6s}
+.card:hover .cov{transform:scale(1.07)}
+.cov img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.big{position:absolute;width:85%;right:-22%;top:6%;opacity:.13}
+.big svg{width:100%;height:auto}
+.info{position:absolute;left:0;right:0;bottom:0;padding:34px 12px 12px;background:linear-gradient(transparent,rgba(5,6,10,.95) 60%);transform:translateY(12px);transition:transform .4s}
+.card:hover .info,.card:focus-visible .info{transform:none}
+.info h3{font-size:.98rem;line-height:1.2;margin:6px 0 2px}
+.info small{color:var(--mu);font-size:.75rem}
+.tag{display:inline-block;font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:99px;background:var(--tc,#888);color:#05060a}
+.desc{font-size:.78rem;color:#c9cee0;max-height:0;opacity:0;overflow:hidden;transition:max-height .4s,opacity .4s}
+.card:hover .desc,.card:focus-visible .desc{max-height:4.5em;opacity:1}
+@media (hover:none){.info{transform:none}.desc{max-height:none;opacity:1}}
+/* Explorador */
+#explorar{padding-bottom:40px}
+.filters{padding:96px 5vw 18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+#q{grid-column:1/-1}
+#explorar .grid{padding:0 5vw}
+.empty{grid-column:1/-1;text-align:center;padding:50px 20px;color:var(--mu)}
+.empty svg{width:72px;height:72px;margin:0 auto 12px;opacity:.7}
+/* Favoritos */
+#favoritos{padding:100px 5vw 40px}
+#favoritos h2{margin-bottom:16px}
+.fitem{display:grid;gap:8px}
+/* Ficha */
+dialog{width:min(860px,94vw);max-height:90vh;overflow:auto;border:1px solid var(--ln);border-radius:18px;background:var(--pn);color:var(--wh);padding:0;box-shadow:0 30px 80px rgba(0,0,0,.8)}
+dialog[open]{animation:pop-in .4s cubic-bezier(.2,.9,.3,1.1)}
+dialog.out{animation:pop-out .25s forwards}
+dialog::backdrop{background:rgba(3,4,8,.8);backdrop-filter:blur(6px);animation:fadein .4s}
+dialog.out::backdrop{opacity:0;transition:opacity .25s}
+@keyframes pop-in{from{opacity:0;transform:translateY(20px) scale(.94)}}
+@keyframes pop-out{to{opacity:0;transform:scale(.94)}}
+.x{position:absolute;right:12px;top:12px;z-index:2;padding:6px 10px}
+.mbanner{height:200px;position:relative;background:linear-gradient(to top,var(--pn),transparent),radial-gradient(60% 120% at 70% 0,var(--c),#0a0c16)}
+.mbanner img{width:100%;height:100%;object-fit:cover}
+.mcontent{display:grid;grid-template-columns:minmax(130px,190px) 1fr;gap:22px;padding:0 24px 24px;margin-top:-80px}
+.mcov{position:relative;aspect-ratio:2/3;border-radius:12px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.7);background:linear-gradient(165deg,var(--c),#0b0d18)}
+.mcov img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.mcov .big{right:-15%;top:10%}
+.minfo h2{font-size:clamp(1.5rem,4vw,2.2rem);margin:6px 0}
+.by{color:var(--mu)}
+.syn{color:#c9cee0;margin-top:10px}
+.note{color:var(--mu);font-size:.8rem;margin-top:14px}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:16px 0}
+.meta div{background:rgba(255,255,255,.04);border:1px solid var(--ln);border-radius:10px;padding:8px 10px;animation:rise .5s var(--d) both}
+dt{font-size:.7rem;color:var(--mu);text-transform:uppercase;letter-spacing:.08em}
+dd{margin:0;font-weight:600}
+@media (max-width:620px){.mcontent{grid-template-columns:1fr;margin-top:-60px}.mcov{width:130px}}
+/* Notificación */
+#toast{position:fixed;left:50%;bottom:24px;z-index:60;transform:translate(-50%,140px);background:var(--pn);border:1px solid rgba(47,184,255,.5);box-shadow:0 0 24px rgba(47,184,255,.3);padding:12px 18px;border-radius:12px;transition:transform .4s cubic-bezier(.2,1.2,.4,1);max-width:90vw}
+#toast.show{transform:translate(-50%,0)}
+/* Administración */
+.adm{padding:96px 5vw 40px;display:grid;gap:18px}
+.box{background:var(--pn);border:1px solid var(--ln);border-radius:16px;padding:18px}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:12px 0}
+.wide{grid-column:1/-1}
+.bar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.list{display:grid;gap:8px;margin-top:12px}
+.row2{display:flex;align-items:center;gap:12px;padding:8px 12px;border:1px solid var(--ln);border-radius:12px;background:rgba(255,255,255,.02)}
+.row2 div{flex:1;min-width:0}
+.row2 small{display:block;color:var(--mu)}
+.pbs{width:28px;height:28px;flex:none}
+.pv{display:block;height:90px;margin-top:6px;border-radius:8px;object-fit:cover}
+/* Movimiento reducido */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+
+<div id="loader"><div class="track"><span class="ball" data-pb></span></div></div>
+
+<div id="intro">
+  <div class="stage">
+    <span class="ib" data-pb></span>
+    <span class="flash"></span>
+    <p class="logo">POKÉMON <b>INFINITE</b></p>
+  </div>
+  <button id="skip" class="skip">Omitir</button>
+</div>
+
+<header class="nav">
+  <a href="#inicio" class="brand"><span class="pb" data-pb></span>POKÉMON <b>INFINITE</b></a>
+  <nav class="links">
+    <a href="#inicio" data-nav="inicio">Inicio</a>
+    <a href="#explorar" data-nav="explorar">Explorar</a>
+    <a href="#sec-gba" data-nav="sec-gba">Consolas</a>
+    <a href="#sec-rom" data-nav="sec-rom">Categorías</a>
+    <a href="#sec-new" data-nav="sec-new">Novedades</a>
+    <a href="#favoritos" data-nav="favoritos">Favoritos <span id="fcount"></span></a>
+    <a href="#admin" data-nav="admin">Admin</a>
+  </nav>
+  <input id="navq" type="search" placeholder="Buscar…" aria-label="Buscar">
+</header>
+
+<main id="inicio" class="view">
+  <div id="hero"></div>
+  <div id="rows"></div>
+</main>
+
+<main id="explorar" class="view hid">
+  <div class="filters">
+    <input id="q" type="search" placeholder="Buscar título, autor o descripción…">
+    <select id="fConsole"></select>
+    <select id="fLang"></select>
+    <select id="fAuthor"></select>
+    <select id="fGenre"></select>
+    <select id="fCat"></select>
+    <select id="fStatus"></select>
+    <select id="fSort">
+      <option value="recent">Más recientes</option>
+      <option value="pop">Más populares</option>
+      <option value="alpha">Alfabéticamente</option>
+    </select>
+  </div>
+  <div id="grid" class="grid"></div>
+</main>
+
+<main id="favoritos" class="view hid">
+  <h2>Tu biblioteca</h2>
+  <div id="favgrid" class="grid"></div>
+</main>
+
+<main id="admin" class="view hid adm">
+  <div id="login" class="box">
+    <h2>Panel de administración</h2>
+    <p class="mu">Conecta con GitHub usando un token personal de grano fino con permiso <b>Contents: lectura y escritura</b> solo sobre tu repositorio. El token vive en memoria mientras la pestaña esté abierta; no se guarda ni se incluye en el código.</p>
+    <div class="fgrid">
+      <label>Propietario<input id="gO" placeholder="tu-usuario"></label>
+      <label>Repositorio<input id="gR" placeholder="pokemon-infinite"></label>
+      <label>Rama<input id="gB" value="main"></label>
+      <label>Token<input id="gT" type="password" autocomplete="off"></label>
+    </div>
+    <div class="acts">
+      <button class="pri" id="gLogin">Iniciar sesión</button>
+      <button id="gLocal">Usar en modo local</button>
+    </div>
+    <p id="gMsg" class="mu"></p>
+  </div>
+
+  <div id="panel" class="hid" style="display:grid;gap:18px">
+    <div class="box">
+      <div class="bar">
+        <h3 id="pTitle">Catálogo</h3>
+        <div class="acts">
+          <button class="pri" id="nNew">+ Nuevo juego</button>
+          <button id="pDl">Descargar games.js</button>
+          <button id="pPub">Publicar en GitHub</button>
+          <button id="pOut">Salir</button>
+        </div>
+      </div>
+      <div id="alist" class="list"></div>
+    </div>
+
+    <form id="form" class="box">
+      <h3 id="fTitle">Nuevo juego</h3>
+      <div class="fgrid">
+        <label>Título<input name="title" required></label>
+        <label>Autor / equipo<input name="author" required></label>
+        <label>Consola
+          <select name="console"><option>GBA</option><option>NDS</option><option>3DS</option><option>PC</option></select>
+        </label>
+        <label>Idioma
+          <select name="language"><option>Español</option><option>Inglés</option><option>Multilingüe</option></select>
+        </label>
+        <label>Género
+          <select name="genre"><option>Aventura</option><option>RPG</option><option>Exploración</option><option>Retos</option></select>
+        </label>
+        <label>Categoría
+          <select name="category"><option>ROM Hack</option><option>Fangame</option><option>Proyecto independiente</option></select>
+        </label>
+        <label>Estado
+          <select name="status"><option>En desarrollo</option><option>Beta</option><option>Completado</option></select>
+        </label>
+        <label>Fecha de publicación<input name="releaseDate" type="date" required></label>
+        <label>Popularidad (0-100)<input name="popularity" type="number" min="0" max="100" value="50"></label>
+        <label>Color de acento<input name="color" type="color" value="#e3350d"></label>
+        <label>Etiquetas (separadas por comas)<input name="tags" placeholder="region, novedad"></label>
+        <label class="wide">Sinopsis<textarea name="description" rows="3"></textarea></label>
+        <label>Enlace de descarga (opcional)<input name="downloadUrl" type="url" placeholder="https://"></label>
+        <label>Página oficial (opcional)<input name="officialUrl" type="url" placeholder="https://"></label>
+        <label>Portada<input type="file" accept="image/*" data-img="cover"><img id="pvCover" class="pv hid" alt=""></label>
+        <label>Banner<input type="file" accept="image/*" data-img="banner"><img id="pvBanner" class="pv hid" alt=""></label>
+        <label class="chk"><input type="checkbox" name="featured"> Destacado en el hero</label>
+      </div>
+      <div class="acts">
+        <button class="pri" type="submit">Guardar</button>
+        <button type="button" id="fCancel">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<dialog id="dlg">
+  <button id="dclose" class="x" aria-label="Cerrar">✕</button>
+  <div id="dbody"></div>
+</dialog>
+
+<div id="toast" role="status"></div>
+
+<!-- Catálogo: se carga antes de la lógica de la aplicación -->
+<script src="js/games.js"></script>
+<script>
+/* =====================================================================
+   1. DATOS: window.GAMES viene de js/games.js
+   ===================================================================== */
+const DEMO = window.GAMES || [];
+const TAG={'ROM Hack':'#e3350d','Fangame':'#2fb8ff','Proyecto independiente':'#8b5cf6'};
+
+/* Secciones de la home: [id, título, filtro, orden] */
+const SECS=[
+['sec-dest','Juegos destacados',g=>g.featured,'pop'],
+['sec-new','Últimas incorporaciones',()=>true,'date'],
+['sec-pop','Más populares',()=>true,'pop'],
+['sec-av','Aventuras Pokémon',g=>g.genre==='Aventura','pop'],
+['sec-rom','ROM Hacks',g=>g.category==='ROM Hack','pop'],
+['sec-fan','Fangames independientes',g=>g.category==='Fangame','pop'],
+['sec-reg','Nuevas regiones',g=>(g.tags||[]).includes('region'),'pop'],
+['sec-es','Juegos en español',g=>g.language==='Español','pop'],
+['sec-gba','Game Boy Advance',g=>g.console==='GBA','pop'],
+['sec-nds','Nintendo DS',g=>g.console==='NDS','pop'],
+['sec-3ds','Nintendo 3DS',g=>g.console==='3DS','pop'],
+['sec-pc','PC',g=>g.console==='PC','pop']
+];
+
+/* =====================================================================
+   2. UTILIDADES Y ESTADO
+   ===================================================================== */
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const slug=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'')||'juego';
+const val=id=>$('#'+id).value;
+const ls={get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{localStorage.setItem(k,v)}catch{}}};
+const enc=s=>{const b=new TextEncoder().encode(s);let x='';b.forEach(c=>x+=String.fromCharCode(c));return btoa(x)};
+const dec=s=>{const x=atob(s.replace(/\s/g,''));return new TextDecoder().decode(Uint8Array.from(x,c=>c.charCodeAt(0)))};
+
+const PB=`<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M5 50a45 45 0 0 1 90 0z" fill="#e3350d"/><path d="M5 50a45 45 0 0 0 90 0z" fill="#f5f7ff"/><rect y="46" width="100" height="8" fill="#07080d"/><circle cx="50" cy="50" r="13" fill="#07080d"/><circle cx="50" cy="50" r="7.5" fill="#f5f7ff"/></svg>`;
+const HEART=`<svg class="heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 9c0 6-8 11-8 11z"/></svg>`;
+
+let DB=structuredClone(DEMO);   // catálogo en memoria
+let FAV=new Set(JSON.parse(ls.get('pi-fav')||'[]'));
+let S=null;                      // sesión GitHub {o,r,b,t}
+let EDIT=null;                   // id del juego en edición
+let TMP={};                      // imágenes nuevas pendientes (dataURL)
+
+/* =====================================================================
+   3. COMPONENTES
+   ===================================================================== */
+const card=(g,i=0)=>`<article class="card" tabindex="0" data-id="${esc(g.id)}" style="--c:${esc(g.color)};--tc:${TAG[g.category]||'#888'};--d:${Math.min(i,12)*55}ms">
+  <div class="cov">${g.cover?`<img loading="lazy" src="${esc(g.cover)}" alt="" onerror="this.remove()">`:''}<span class="big">${PB}</span></div>
+  <div class="info"><span class="tag">${esc(g.category)}</span><h3>${esc(g.title)}</h3><p class="desc">${esc(g.description)}</p><small>${esc(g.console)} · ${esc(g.language)}</small></div>
+</article>`;
+
+const favBtn=(id,cls='')=>`<button class="${cls} ${FAV.has(id)?'on':''}" data-fav="${esc(id)}">${HEART}<span>${FAV.has(id)?'Guardado':'Añadir a favoritos'}</span></button>`;
+
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2400)}
+function updateFavCount(){$('#fcount').textContent=FAV.size?`(${FAV.size})`:''}
+
+/* =====================================================================
+   4. VISTAS
+   ===================================================================== */
+function renderHome(){
+  const h=DB.find(g=>g.featured)||DB[0];
+  $('#hero').innerHTML=h?`<div class="hero" style="--hc:${esc(h.color)}">
+    <div class="hero-bg">${h.banner?`<img src="${esc(h.banner)}" alt="">`:''}</div>
+    <span class="hero-pb">${PB}</span>
+    <div class="hero-txt">
+      <span class="eyebrow">Destacado · ${esc(h.category)}</span>
+      <h1>${esc(h.title)}</h1>
+      <p class="meta2">${esc(h.author)} · ${esc(h.console)} · ${esc(h.language)} · ${esc(h.genre)} · ${esc(h.status)}</p>
+      <p class="lead">${esc(h.description)}</p>
+      <div class="acts"><button class="pri" data-open="${esc(h.id)}">Descubrir</button>${favBtn(h.id)}</div>
+    </div></div>`:'';
+  $('#rows').innerHTML=SECS.map(([id,title,fn,sort])=>{
+    const list=DB.filter(fn).sort((a,b)=>sort==='date'?b.releaseDate.localeCompare(a.releaseDate):b.popularity-a.popularity);
+    if(!list.length) return '';
+    return `<section class="sec" id="${id}">
+      <div class="sh"><h2>${title}</h2><div class="arrows"><button data-dir="-1" aria-label="Anterior">‹</button><button data-dir="1" aria-label="Siguiente">›</button></div></div>
+      <div class="row">${list.map(card).join('')}</div></section>`;
+  }).join('');
+}
+
+function buildFilters(){
+  const uniq=k=>[...new Set(DB.map(g=>g[k]))].filter(Boolean).sort();
+  const fill=(id,key,label)=>{const s=$('#'+id),cur=s.value;s.innerHTML=`<option value="">${label}: todos</option>`+uniq(key).map(v=>`<option>${esc(v)}</option>`).join('');s.value=cur};
+  fill('fConsole','console','Consola');fill('fLang','language','Idioma');fill('fAuthor','author','Autor');
+  fill('fGenre','genre','Género');fill('fCat','category','Categoría');fill('fStatus','status','Estado');
+}
+
+function renderExplore(){
+  const q=val('q').toLowerCase().trim();
+  const pairs=[['console','fConsole'],['language','fLang'],['author','fAuthor'],['genre','fGenre'],['category','fCat'],['status','fStatus']];
+  const sort=val('fSort');
+  const L=DB.filter(g=>(!q||(g.title+' '+g.author+' '+g.description).toLowerCase().includes(q))&&pairs.every(([k,id])=>!val(id)||g[k]===val(id)));
+  L.sort(sort==='alpha'?(a,b)=>a.title.localeCompare(b.title,'es'):sort==='pop'?(a,b)=>b.popularity-a.popularity:(a,b)=>b.releaseDate.localeCompare(a.releaseDate));
+  $('#grid').innerHTML=L.length?L.map(card).join(''):`<div class="empty">${PB}<h3>Ningún proyecto encaja con estos filtros</h3><p>Prueba a quitar alguno o cambia la búsqueda.</p><button id="reset">Limpiar filtros</button></div>`;
+}
+
+function renderFavs(){
+  const L=DB.filter(g=>FAV.has(g.id));
+  $('#favgrid').innerHTML=L.length?L.map((g,i)=>`<div class="fitem">${card(g,i)}<button class="on" data-fav="${esc(g.id)}">${HEART}<span>Quitar</span></button></div>`).join('')
+    :`<div class="empty">${PB}<h3>Tu biblioteca está vacía</h3><p>Pulsa «Añadir a favoritos» en cualquier proyecto.</p></div>`;
+}
+
+/* Ficha */
+function openGame(id){
+  const g=DB.find(x=>x.id===id); if(!g) return;
+  const link=(href,label,cls)=>href?`<a class="btn ${cls}" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${label}</a>`:`<button class="${cls}" disabled>${label}</button>`;
+  $('#dbody').innerHTML=`
+  <div class="mbanner" style="--c:${esc(g.color)}">${g.banner?`<img src="${esc(g.banner)}" alt="">`:''}</div>
+  <div class="mcontent">
+    <div class="mcov" style="--c:${esc(g.color)}">${g.cover?`<img src="${esc(g.cover)}" alt="">`:`<span class="big">${PB}</span>`}</div>
+    <div class="minfo">
+      <span class="tag" style="--tc:${TAG[g.category]||'#888'}">${esc(g.category)}</span>
+      <h2>${esc(g.title)}</h2>
+      <p class="by">${esc(g.author)}</p>
+      <dl class="meta">${[['Consola',g.console],['Idioma',g.language],['Género',g.genre],['Categoría',g.category],['Estado',g.status],['Publicación',g.releaseDate]]
+        .map(([k,v],i)=>`<div style="--d:${i*70}ms"><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
+      <p class="syn">${esc(g.description)}</p>
+      <div class="acts">${link(g.officialUrl,'Descubrir proyecto','pri')}${link(g.downloadUrl,'Visitar descarga','')}${favBtn(g.id)}</div>
+      <p class="note">Directorio informativo: la plataforma no aloja archivos y los enlaces llevan a páginas de los creadores. Los juegos marcados como [DEMO] son ficticios.</p>
+    </div>
+  </div>`;
+  $('#dlg').showModal();
+}
+function closeDlg(){const d=$('#dlg');d.classList.add('out');setTimeout(()=>{d.close();d.classList.remove('out')},250)}
+
+/* Favoritos */
+function toggleFav(id,btn){
+  FAV.has(id)?FAV.delete(id):FAV.add(id);
+  ls.set('pi-fav',JSON.stringify([...FAV]));
+  updateFavCount();
+  if(btn){btn.classList.remove('pop');void btn.offsetWidth;btn.classList.add('pop');setTimeout(()=>btn.classList.remove('pop'),520)}
+  $$('[data-fav]').forEach(b=>{const on=FAV.has(b.dataset.fav);b.classList.toggle('on',on);const s=b.querySelector('span');if(s)s.textContent=on?'Guardado':'Añadir a favoritos'});
+  if(!$('#favoritos').classList.contains('hid')) renderFavs();
+  toast(FAV.has(id)?'Añadido a tu biblioteca':'Eliminado de favoritos');
+}
+
+/* Router por hash: #inicio, #explorar, #favoritos, #admin, #sec-* */
+function route(){
+  const h=location.hash.slice(1)||'inicio';
+  const target=/^(inicio|explorar|favoritos|admin)$/.test(h)?h:'inicio';
+  $$('.view').forEach(v=>v.classList.toggle('hid',v.id!==target));
+  $$('[data-nav]').forEach(a=>a.classList.toggle('on',a.dataset.nav===h));
+  if(target==='explorar') renderExplore();
+  if(target==='favoritos') renderFavs();
+  if(h.startsWith('sec-')) requestAnimationFrame(()=>document.getElementById(h)?.scrollIntoView({behavior:'smooth'}));
+  else window.scrollTo({top:0});
+}
+
+/* =====================================================================
+   5. PANEL DE ADMINISTRACIÓN
+   ===================================================================== */
+function sync(){renderAdmin();buildFilters();renderHome();renderExplore();updateFavCount()}
+
+function renderAdmin(){
+  $('#alist').innerHTML=DB.map(g=>`<div class="row2"><span class="pbs">${PB}</span>
+    <div><b>${esc(g.title)}</b><small>${esc(g.console)} · ${esc(g.category)} · ${esc(g.status)}</small></div>
+    <button data-edit="${esc(g.id)}">Editar</button><button data-del="${esc(g.id)}">Eliminar</button></div>`).join('')||'<p class="mu">Sin juegos todavía.</p>';
+}
+
+function fillForm(g){
+  const f=$('#form'),el=n=>f.elements[n];
+  f.reset();
+  ['title','author','console','language','genre','category','status','releaseDate','popularity','color','description','downloadUrl','officialUrl']
+    .forEach(k=>{if(g) el(k).value=g[k]??''});
+  el('tags').value=g?(g.tags||[]).join(', '):'';
+  el('featured').checked=!!g?.featured;
+  ['cover','banner'].forEach(k=>{const pv=$(k==='cover'?'#pvCover':'#pvBanner');pv.src=g?.[k]||'';pv.classList.toggle('hid',!g?.[k])});
+  TMP={};
+}
+
+/* GitHub API (sin backend): lectura y escritura de js/games.js e imágenes */
+async function gh(p,o={}){
+  const r=await fetch(`https://api.github.com/repos/${S.o}/${S.r}/contents/${p}`,{
+    method:o.m||'GET',
+    headers:{Authorization:`Bearer ${S.t}`,Accept:'application/vnd.github+json',...(o.body?{'Content-Type':'application/json'}:{})},
+    body:o.body});
+  if(!r.ok) throw new Error('GitHub '+r.status);
+  return r.json();
+}
+async function putFile(p,b64,msg){
+  let sha; try{sha=(await gh(`${p}?ref=${S.b}`)).sha}catch{}
+  return gh(p,{m:'PUT',body:JSON.stringify({message:msg,content:b64,branch:S.b,...(sha?{sha}:{})})});
+}
+
+async function connect(){
+  const v={o:$('#gO').value.trim(),r:$('#gR').value.trim(),b:$('#gB').value.trim()||'main',t:$('#gT').value.trim()};
+  if(!v.o||!v.r||!v.t) return ($('#gMsg').textContent='Completa propietario, repositorio y token.');
+  S=v;
+  try{
+    const f=await gh(`js/games.js?ref=${S.b}`);
+    const w={};new Function('window',dec(f.content))(w);
+    if(!Array.isArray(w.GAMES)) throw new Error('games.js no define window.GAMES');
+    DB=w.GAMES;sync();showPanel();
+  }catch(e){
+    S=null;
+    $('#gMsg').textContent=`No se pudo conectar (${e.message}). Revisa el token y el repositorio. Desde una vista previa sin acceso a GitHub la conexión no funciona; al publicar en GitHub Pages sí.`;
+  }
+}
+function showPanel(){
+  $('#login').classList.add('hid');$('#panel').classList.remove('hid');
+  $('#pTitle').textContent=S?`${S.o}/${S.r} · rama ${S.b}`:'Modo local (sin GitHub)';
+  $('#pPub').disabled=!S;
+  renderAdmin();fillForm(null);
+}
+async function publish(){
+  if(!S) return;
+  const btn=$('#pPub');btn.disabled=true;
+  try{
+    for(const g of DB) for(const f of ['cover','banner']){
+      if(!g[f]?.startsWith('data:')) continue;
+      const [meta,b64]=g[f].split(',');
+      const ext=meta.includes('png')?'png':meta.includes('webp')?'webp':'jpg';
+      const path=`assets/${f==='cover'?'covers':'banners'}/${g.id}.${ext}`;
+      await putFile(path,b64,`imagen: ${g.id}`);
+      g[f]=path;
+    }
+    const src='// Generado por el panel de administración\nwindow.GAMES = '+JSON.stringify(DB,null,2)+';\n';
+    await putFile('js/games.js',enc(src),'actualiza catálogo');
+    toast('Publicado en GitHub ✓');
+  }catch(e){toast('Error al publicar: '+e.message)}
+  finally{btn.disabled=!S}
+}
+
+/* =====================================================================
+   6. EVENTOS
+   ===================================================================== */
+document.addEventListener('click',e=>{
+  const t=e.target;
+  const c=t.closest('.card');          if(c){openGame(c.dataset.id);return}
+  const o=t.closest('[data-open]');    if(o){openGame(o.dataset.open);return}
+  const f=t.closest('[data-fav]');     if(f){toggleFav(f.dataset.fav,f);return}
+  const d=t.closest('[data-dir]');     if(d){const row=d.closest('.sec').querySelector('.row');row.scrollBy({left:+d.dataset.dir*row.clientWidth*.8,behavior:'smooth'});return}
+  const ed=t.closest('[data-edit]');   if(ed){EDIT=ed.dataset.edit;const g=DB.find(x=>x.id===EDIT);fillForm(g);$('#fTitle').textContent='Editando: '+g.title;$('#form').scrollIntoView({behavior:'smooth'});return}
+  const dl=t.closest('[data-del]');    if(dl&&confirm('¿Eliminar este juego del catálogo?')){DB=DB.filter(g=>g.id!==dl.dataset.del);EDIT=null;fillForm(null);sync();return}
+  if(t.closest('#reset')){['q','fConsole','fLang','fAuthor','fGenre','fCat','fStatus'].forEach(id=>$('#'+id).value='');renderExplore();return}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.classList?.contains('card'))openGame(e.target.dataset.id)});
+
+$('#dclose').onclick=closeDlg;
+$('#dlg').addEventListener('click',e=>{if(e.target===$('#dlg'))closeDlg()});
+$('#dlg').addEventListener('cancel',e=>{e.preventDefault();closeDlg()});
+
+$('#navq').addEventListener('keydown',e=>{if(e.key==='Enter'){$('#q').value=e.target.value;location.hash='explorar';renderExplore()}});
+['input','change'].forEach(ev=>$('#explorar').addEventListener(ev,e=>{if(e.target.matches('input,select'))renderExplore()}));
+
+$('#gLogin').onclick=connect;
+$('#gLocal').onclick=()=>{S=null;showPanel()};
+$('#pOut').onclick=()=>{S=null;$('#panel').classList.add('hid');$('#login').classList.remove('hid');$('#gT').value=''};
+$('#pPub').onclick=publish;
+$('#pDl').onclick=()=>{
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob(['window.GAMES = '+JSON.stringify(DB,null,2)+';\n'],{type:'text/javascript'}));
+  a.download='games.js';a.click();
+};
+$('#nNew').onclick=()=>{EDIT=null;fillForm(null);$('#fTitle').textContent='Nuevo juego'};
+$('#fCancel').onclick=()=>{EDIT=null;fillForm(null);$('#fTitle').textContent='Nuevo juego'};
+
+$('#form').addEventListener('change',e=>{
+  const k=e.target.dataset.img; if(!k) return;
+  const r=new FileReader();
+  r.onload=()=>{TMP[k]=r.result;const pv=$(k==='cover'?'#pvCover':'#pvBanner');pv.src=r.result;pv.classList.remove('hid')};
+  r.readAsDataURL(e.target.files[0]);
+});
+$('#form').addEventListener('submit',e=>{
+  e.preventDefault();
+  const el=e.target.elements,d={};
+  ['title','author','console','language','genre','category','status','releaseDate','color','description','downloadUrl','officialUrl']
+    .forEach(k=>d[k]=el[k].value.trim());
+  d.popularity=+el.popularity.value||0;
+  d.featured=el.featured.checked;
+  d.tags=el.tags.value.split(',').map(s=>s.trim()).filter(Boolean);
+  const old=EDIT&&DB.find(g=>g.id===EDIT);
+  d.cover=TMP.cover??old?.cover??'';
+  d.banner=TMP.banner??old?.banner??'';
+  if(old) Object.assign(old,d);
+  else DB.push({id:slug(d.title)+'-'+Date.now().toString(36),...d});
+  EDIT=null;fillForm(null);$('#fTitle').textContent='Nuevo juego';
+  sync();
+  toast(S?'Guardado. Pulsa «Publicar en GitHub» para enviarlo.':'Guardado en modo local.');
+});
+
+window.addEventListener('hashchange',route);
+
+/* =====================================================================
+   7. ARRANQUE
+   ===================================================================== */
+document.querySelectorAll('[data-pb]').forEach(e=>{if(!e.innerHTML.trim())e.innerHTML=PB});
+buildFilters();renderHome();renderExplore();renderAdmin();route();updateFavCount();
+
+const hideLoader=()=>$('#loader').classList.add('off');
+if(document.readyState==='complete') hideLoader(); else window.addEventListener('load',hideLoader);
+
+const closeIntro=()=>{const i=$('#intro');if(!i)return;i.classList.add('off');ls.set('pi-intro','1');setTimeout(()=>i.remove(),450)};
+if(ls.get('pi-intro')||matchMedia('(prefers-reduced-motion: reduce)').matches) $('#intro').remove();
+else{$('#skip').onclick=closeIntro;$('#intro').addEventListener('click',closeIntro);setTimeout(closeIntro,1600)}
+</script>
+</body>
+</html>
