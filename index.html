@@ -160,6 +160,37 @@ dd{margin:0;font-weight:600}
 #form textarea{min-height:130px;line-height:1.5}
 #form .pv{height:150px}
 #form h3{font-size:1.4rem}
+/* ===== Refinado: hero y ficha ===== */
+.hero{align-items:center;padding:120px 6vw 80px}
+.hero-txt{max-width:min(680px,100%)}
+.hero h1{font-size:clamp(2.2rem,5.6vw,4.2rem);text-shadow:0 4px 30px rgba(0,0,0,.6)}
+.hero .lead{font-size:1.05rem;line-height:1.75;max-width:60ch;margin:14px 0 22px}
+.hero-pb{right:-10vw}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}
+.pill{font-size:.82rem;padding:6px 12px;border-radius:99px;border:1px solid var(--ln);background:rgba(255,255,255,.06);backdrop-filter:blur(6px);white-space:nowrap}
+.pill b{color:var(--mu);font-weight:600;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;margin-right:6px}
+/* Ficha centrada */
+dialog{margin:auto;width:min(760px,94vw);border-radius:20px;overflow:hidden;padding:0}
+.mhero{position:relative;height:clamp(170px,32vw,260px);background:#0a0c16;overflow:hidden}
+.mhero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top}
+.mhero::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 30%,rgba(15,19,34,.9) 85%,#0f1322)}
+.mbody{position:relative;z-index:2;text-align:center;padding:0 clamp(18px,4vw,36px) 30px;margin-top:-70px}
+.mcov{position:relative;width:clamp(120px,20vw,156px);aspect-ratio:2/3;margin:0 auto 16px;border-radius:14px;overflow:hidden;border:1px solid var(--ln);box-shadow:0 20px 50px rgba(0,0,0,.7);background:linear-gradient(165deg,var(--c),#0b0d18)}
+.mcov img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.mcov .big{right:-15%;top:10%}
+.mtitle{font-size:clamp(1.4rem,4vw,2rem);color:#ffffff;line-height:1.2;margin:10px 0 4px}
+.mbody .by{color:var(--mu)}
+.mbody .tag{margin-bottom:4px}
+.mbody .pills{justify-content:center}
+.mbody .syn{max-width:60ch;margin:16px auto 0;color:#c9cee0;line-height:1.7}
+.mbody .acts{justify-content:center}
+.mbody .note{font-size:.8rem;color:var(--mu)}
+@media (max-width:620px){
+  .hero{padding:110px 5vw 60px}
+  .hero .acts,.mbody .acts{flex-direction:column}
+  .hero .acts>*,.mbody .acts>*{width:100%}
+  .pill{white-space:normal}
+}
 /* Movimiento reducido */
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
@@ -347,6 +378,8 @@ let TMP={};                      // imágenes nuevas pendientes (dataURL)
 /* =====================================================================
    3. COMPONENTES
    ===================================================================== */
+const pills=g=>[['Consola',g.console],['Idioma',g.language],['Género',g.genre],['Estado',g.status],['Publicación',g.releaseDate]]
+  .map(([k,v])=>`<span class="pill"><b>${k}</b>${esc(v)}</span>`).join('');
 const card=(g,i=0)=>`<article class="card" tabindex="0" data-id="${esc(g.id)}" style="--c:${esc(g.color)};--tc:${TAG[g.category]||'#888'};--d:${Math.min(i,12)*55}ms">
   <div class="cov">${g.cover?`<img loading="lazy" src="${esc(g.cover)}" alt="" onerror="this.remove()">`:''}<span class="big">${PB}</span></div>
   <div class="info"><span class="tag">${esc(g.category)}</span><h3>${esc(g.title)}</h3><p class="desc">${esc(g.description)}</p><small>${esc(g.console)} · ${esc(g.language)}</small></div>
@@ -368,7 +401,7 @@ function renderHome(){
     <div class="hero-txt">
       <span class="eyebrow">Destacado · ${esc(h.category)}</span>
       <h1>${esc(h.title)}</h1>
-      <p class="meta2">${esc(h.author)} · ${esc(h.console)} · ${esc(h.language)} · ${esc(h.genre)} · ${esc(h.status)}</p>
+      <p class="meta2">Por ${esc(h.author)}</p><div class="pills">${pills(h)}</div>
       <p class="lead">${esc(h.description)}</p>
       <div class="acts"><button class="pri" data-open="${esc(h.id)}">Descubrir</button>${favBtn(h.id)}</div>
     </div></div>`:'';
@@ -407,20 +440,18 @@ function renderFavs(){
 function openGame(id){
   const g=DB.find(x=>x.id===id); if(!g) return;
   const link=(href,label,cls)=>href?`<a class="btn ${cls}" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${label}</a>`:`<button class="${cls}" disabled>${label}</button>`;
+  const fondo=g.banner||g.cover;
   $('#dbody').innerHTML=`
-  <div class="mbanner" style="--c:${esc(g.color)}">${g.banner?`<img src="${esc(g.banner)}" alt="">`:''}</div>
-  <div class="mcontent">
+  <div class="mhero" style="--c:${esc(g.color)}">${fondo?`<img src="${esc(fondo)}" alt="">`:''}</div>
+  <div class="mbody">
     <div class="mcov" style="--c:${esc(g.color)}">${g.cover?`<img src="${esc(g.cover)}" alt="">`:`<span class="big">${PB}</span>`}</div>
-    <div class="minfo">
-      <span class="tag" style="--tc:${TAG[g.category]||'#888'}">${esc(g.category)}</span>
-      <h2>${esc(g.title)}</h2>
-      <p class="by">${esc(g.author)}</p>
-      <dl class="meta">${[['Consola',g.console],['Idioma',g.language],['Género',g.genre],['Categoría',g.category],['Estado',g.status],['Publicación',g.releaseDate]]
-        .map(([k,v],i)=>`<div style="--d:${i*70}ms"><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
-      <p class="syn">${esc(g.description)}</p>
-      <div class="acts">${link(g.officialUrl,'Descubrir proyecto','pri')}${link(g.downloadUrl,'Visitar descarga','')}${favBtn(g.id)}</div>
-      <p class="note">Directorio informativo: la plataforma no aloja archivos y los enlaces llevan a páginas de los creadores. Los juegos marcados como [DEMO] son ficticios.</p>
-    </div>
+    <span class="tag" style="--tc:${TAG[g.category]||'#888'}">${esc(g.category)}</span>
+    <h2 class="mtitle">${esc(g.title)}</h2>
+    <p class="by">${esc(g.author)}</p>
+    <div class="pills">${pills(g)}</div>
+    <p class="syn">${esc(g.description)}</p>
+    <div class="acts">${link(g.officialUrl,'Descubrir proyecto','pri')}${link(g.downloadUrl,'Visitar descarga','')}${favBtn(g.id)}</div>
+    <p class="note">Directorio informativo: la plataforma no aloja archivos y los enlaces llevan a páginas de los creadores. Los juegos marcados como [DEMO] son ficticios.</p>
   </div>`;
   $('#dlg').showModal();
 }
