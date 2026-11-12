@@ -4,7 +4,7 @@
 
 ### La biblioteca de los juegos Pokémon creados por la comunidad
 
-[![Visitar la web](https://img.shields.io/badge/▶%20Visitar%20la%20web-e3350d?style=for-the-badge)](https://TU-USUARIO.github.io/pokemon-infinite/)
+[![Visitar la web](https://img.shields.io/badge/▶%20Visitar%20la%20web-e3350d?style=for-the-badge)](https://pokemoninfinite.github.io/pokemoninfinite/)
 [![Explorar catálogo](https://img.shields.io/badge/🔍%20Explorar%20catálogo-2fb8ff?style=for-the-badge)](https://TU-USUARIO.github.io/pokemon-infinite/#explorar)
 [![Mis favoritos](https://img.shields.io/badge/♡%20Mis%20favoritos-8b5cf6?style=for-the-badge)](https://TU-USUARIO.github.io/pokemon-infinite/#favoritos)
 [![Novedades](https://img.shields.io/badge/✦%20Novedades-f5f7ff?style=for-the-badge&labelColor=0f1322&color=f5f7ff)](https://TU-USUARIO.github.io/pokemon-infinite/#sec-new)
