@@ -122,9 +122,9 @@ dialog.out::backdrop{opacity:0;transition:opacity .25s}
 @keyframes pop-in{from{opacity:0;transform:translateY(20px) scale(.94)}}
 @keyframes pop-out{to{opacity:0;transform:scale(.94)}}
 .x{position:absolute;right:12px;top:12px;z-index:2;padding:6px 10px}
-.mbanner{height:200px;position:relative;background:linear-gradient(to top,var(--pn),transparent),radial-gradient(60% 120% at 70% 0,var(--c),#0a0c16)}
+.mbanner{height:240px;position:relative;background:linear-gradient(to top,var(--pn),transparent),radial-gradient(60% 120% at 70% 0,var(--c),#0a0c16)}
 .mbanner img{width:100%;height:100%;object-fit:cover}
-.mcontent{display:grid;grid-template-columns:minmax(130px,190px) 1fr;gap:22px;padding:0 24px 24px;margin-top:-80px}
+.mcontent{display:grid;grid-template-columns:minmax(130px,190px) 1fr;gap:22px;padding:0 24px 24px;margin-top:-100px;position:relative;z-index:2}
 .mcov{position:relative;aspect-ratio:2/3;border-radius:12px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.7);background:linear-gradient(165deg,var(--c),#0b0d18)}
 .mcov img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .mcov .big{right:-15%;top:10%}
@@ -136,7 +136,7 @@ dialog.out::backdrop{opacity:0;transition:opacity .25s}
 .meta div{background:rgba(255,255,255,.04);border:1px solid var(--ln);border-radius:10px;padding:8px 10px;animation:rise .5s var(--d) both}
 dt{font-size:.7rem;color:var(--mu);text-transform:uppercase;letter-spacing:.08em}
 dd{margin:0;font-weight:600}
-@media (max-width:620px){.mcontent{grid-template-columns:1fr;margin-top:-60px}.mcov{width:130px}}
+@media (max-width:620px){.mcontent{grid-template-columns:1fr;margin-top:-70px}.mcov{width:130px}}
 /* Notificación */
 #toast{position:fixed;left:50%;bottom:24px;z-index:60;transform:translate(-50%,140px);background:var(--pn);border:1px solid rgba(47,184,255,.5);box-shadow:0 0 24px rgba(47,184,255,.3);padding:12px 18px;border-radius:12px;transition:transform .4s cubic-bezier(.2,1.2,.4,1);max-width:90vw}
 #toast.show{transform:translate(-50%,0)}
@@ -279,8 +279,8 @@ dd{margin:0;font-weight:600}
         <label class="wide">Sinopsis<textarea name="description" rows="3"></textarea></label>
         <label>Enlace de descarga (opcional)<input name="downloadUrl" type="url" placeholder="https://"></label>
         <label>Página oficial (opcional)<input name="officialUrl" type="url" placeholder="https://"></label>
-        <label>Portada<input type="file" accept="image/*" data-img="cover"><img id="pvCover" class="pv hid" alt=""></label>
-        <label>Banner<input type="file" accept="image/*" data-img="banner"><img id="pvBanner" class="pv hid" alt=""></label>
+        <label>Portada (2:3, se ajusta sola)<input type="file" accept="image/*" data-img="cover"><img id="pvCover" class="pv hid" alt=""></label>
+        <label>Banner (16:9, se ajusta sola)<input type="file" accept="image/*" data-img="banner"><img id="pvBanner" class="pv hid" alt=""></label>
         <label class="chk"><input type="checkbox" name="featured"> Destacado en el hero</label>
       </div>
       <div class="acts">
@@ -558,11 +558,33 @@ $('#pDl').onclick=()=>{
 $('#nNew').onclick=()=>{EDIT=null;fillForm(null);$('#fTitle').textContent='Nuevo juego'};
 $('#fCancel').onclick=()=>{EDIT=null;fillForm(null);$('#fTitle').textContent='Nuevo juego'};
 
-$('#form').addEventListener('change',e=>{
-  const k=e.target.dataset.img; if(!k) return;
-  const r=new FileReader();
-  r.onload=()=>{TMP[k]=r.result;const pv=$(k==='cover'?'#pvCover':'#pvBanner');pv.src=r.result;pv.classList.remove('hid')};
-  r.readAsDataURL(e.target.files[0]);
+/* Tamaños estándar: portada 600×900 (2:3) y banner 1280×720 (16:9).
+   La imagen se encaja sin recortarla y el fondo se rellena con una versión desenfocada. */
+const SIZES={cover:[600,900],banner:[1280,720]};
+function procesarImagen(file,[w,h]){
+  return new Promise((res,rej)=>{
+    const url=URL.createObjectURL(file),img=new Image();
+    img.onload=()=>{
+      const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');
+      x.fillStyle='#07080d';x.fillRect(0,0,w,h);
+      const k=Math.max(w/img.width,h/img.height);
+      x.filter='blur(24px) brightness(.55)';
+      x.drawImage(img,(w-img.width*k)/2,(h-img.height*k)/2,img.width*k,img.height*k);
+      x.filter='none';
+      const s=Math.min(w/img.width,h/img.height);
+      x.drawImage(img,(w-img.width*s)/2,(h-img.height*s)/2,img.width*s,img.height*s);
+      URL.revokeObjectURL(url);res(c.toDataURL('image/jpeg',.85));
+    };
+    img.onerror=()=>{URL.revokeObjectURL(url);rej(new Error('No se pudo leer la imagen'))};
+    img.src=url;
+  });
+}
+$('#form').addEventListener('change',async e=>{
+  const k=e.target.dataset.img; if(!k||!e.target.files[0]) return;
+  try{
+    const data=await procesarImagen(e.target.files[0],SIZES[k]);
+    TMP[k]=data;const pv=$(k==='cover'?'#pvCover':'#pvBanner');pv.src=data;pv.classList.remove('hid');
+  }catch(err){toast(err.message)}
 });
 $('#form').addEventListener('submit',e=>{
   e.preventDefault();
