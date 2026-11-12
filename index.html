@@ -378,8 +378,6 @@ const TAG={'ROM Hack':'#e3350d','Fangame':'#2fb8ff','Proyecto independiente':'#8
 /* Secciones de la home: [id, título, filtro, orden] */
 const SECS=[
 ['sec-dest','Juegos destacados',g=>g.featured,'pop'],
-['sec-new','Últimas incorporaciones',()=>true,'date'],
-['sec-pop','Más populares',()=>true,'pop'],
 ['sec-av','Aventuras Pokémon',g=>g.genre==='Aventura','pop'],
 ['sec-rom','ROM Hacks',g=>g.category==='ROM Hack','pop'],
 ['sec-fan','Fangames independientes',g=>g.category==='Fangame','pop'],
@@ -388,7 +386,8 @@ const SECS=[
 ['sec-gba','Game Boy Advance',g=>g.console==='GBA','pop'],
 ['sec-nds','Nintendo DS',g=>g.console==='NDS','pop'],
 ['sec-3ds','Nintendo 3DS',g=>g.console==='3DS','pop'],
-['sec-pc','PC',g=>g.console==='PC','pop']
+['sec-pc','PC',g=>g.console==='PC','pop'],
+['sec-new','Últimas incorporaciones',()=>true,'date']
 ];
 
 /* =====================================================================
@@ -442,8 +441,10 @@ function renderHome(){
       <p class="lead">${esc(h.description)}</p>
       <div class="acts"><button class="pri" data-open="${esc(h.id)}">Descubrir</button>${favBtn(h.id)}</div>
     </div></div>`:'';
+  const usados=new Set(h?[h.id]:[]);
   $('#rows').innerHTML=!DB.length?`<div class="empty" style="padding:80px 5vw">${PB}<h3>Aún no hay proyectos</h3><p>Añade el primero desde el panel de administración.</p></div>`:SECS.map(([id,title,fn,sort])=>{
-    const list=DB.filter(fn).sort((a,b)=>sort==='date'?b.releaseDate.localeCompare(a.releaseDate):b.popularity-a.popularity);
+    const list=DB.filter(g=>!usados.has(g.id)&&fn(g)).sort((a,b)=>sort==='date'?b.releaseDate.localeCompare(a.releaseDate):b.popularity-a.popularity);
+    list.forEach(g=>usados.add(g.id));
     if(!list.length) return '';
     return `<section class="sec" id="${id}">
       <div class="sh"><h2>${title}</h2><div class="arrows"><button data-dir="-1" aria-label="Anterior">‹</button><button data-dir="1" aria-label="Siguiente">›</button></div></div>
@@ -520,7 +521,10 @@ function route(){
   $$('[data-nav]').forEach(a=>a.classList.toggle('on',a.dataset.nav===h));
   if(target==='explorar') renderExplore();
   if(target==='favoritos') renderFavs();
-  if(h.startsWith('sec-')) requestAnimationFrame(()=>document.getElementById(h)?.scrollIntoView({behavior:'smooth'}));
+  if(h.startsWith('sec-')){
+    if(document.getElementById(h)) requestAnimationFrame(()=>document.getElementById(h).scrollIntoView({behavior:'smooth'}));
+    else location.hash='explorar';
+  }
   else window.scrollTo({top:0});
 }
 
@@ -682,6 +686,7 @@ window.addEventListener('hashchange',route);
    7. ARRANQUE
    ===================================================================== */
 document.querySelectorAll('[data-pb]').forEach(e=>{if(!e.innerHTML.trim())e.innerHTML=PB});
+if(location.hash.startsWith('#juego-')) history.replaceState(null,'',location.pathname);
 buildFilters();renderHome();renderExplore();renderAdmin();route();updateFavCount();
 
 const hideLoader=()=>{const l=$('#loader');l.classList.add('off');setTimeout(()=>l.remove(),500)};
