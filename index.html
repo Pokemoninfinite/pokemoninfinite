@@ -63,7 +63,7 @@ label{display:grid;gap:6px;font-size:.8rem;color:var(--mu)}
 .links a::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:2px;background:var(--blue);transform:scaleX(0);transition:transform .3s}
 .links a:hover::after,.links a.on::after{transform:scaleX(1)}
 #navq{width:170px;padding:.4rem .7rem}
-@media (max-width:700px){.nav{padding:10px 4vw;gap:10px}#navq{width:110px}.brand{font-size:.8rem}}
+@media (max-width:700px){.nav{flex-wrap:wrap;padding:10px 4vw;gap:8px}.brand{font-size:.8rem;order:1;flex:1}#navq{order:2;width:100%}.links{order:3;flex:none;width:100%;gap:14px;padding-bottom:4px}.links a{font-size:.82rem}}
 /* Hero */
 .hero{position:relative;min-height:min(80vh,660px);display:flex;align-items:flex-end;overflow:hidden;padding:110px 5vw 9vh}
 .hero-bg{position:absolute;inset:0;background:radial-gradient(70% 90% at 72% 30%,var(--hc),transparent 62%),#0a0c16;animation:fadein 1.5s both}
@@ -101,7 +101,7 @@ label{display:grid;gap:6px;font-size:.8rem;color:var(--mu)}
 .tag{display:inline-block;font-size:.66rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:99px;background:var(--tc,#888);color:#05060a}
 .desc{font-size:.78rem;color:#c9cee0;max-height:0;opacity:0;overflow:hidden;transition:max-height .4s,opacity .4s}
 .card:hover .desc,.card:focus-visible .desc{max-height:4.5em;opacity:1}
-@media (hover:none){.info{transform:none}.desc{max-height:none;opacity:1}}
+@media (hover:none){.info{transform:none}.desc{display:none}}
 /* Explorador */
 #explorar{padding-bottom:40px}
 .filters{padding:96px 5vw 18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
@@ -109,6 +109,32 @@ label{display:grid;gap:6px;font-size:.8rem;color:var(--mu)}
 #explorar .grid{padding:0 5vw}
 .empty{grid-column:1/-1;text-align:center;padding:50px 20px;color:var(--mu)}
 .empty svg{width:72px;height:72px;margin:0 auto 12px;opacity:.7}
+/* Favoritos */
+#favoritos{padding:100px 5vw 40px}
+#favoritos h2{margin-bottom:16px}
+.fitem{display:grid;gap:8px}
+/* Ficha: página estática con navegación por hash (#juego-id) */
+function renderFicha(g){
+  if(!g){$('#fbody').innerHTML=`<div class="empty">${PB}<h3>Este proyecto ya no está disponible</h3><p><a href="#explorar">Volver al catálogo</a></p></div>`;return}
+  const link=(href,label,cls)=>href?`<a class="btn ${cls}" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${label}</a>`:`<button class="${cls}" disabled>${label}</button>`;
+  const fondo=g.banner||g.cover;
+  $('#fbody').innerHTML=`
+  <a href="#inicio" class="volver" onclick="if(history.length>1){history.back();return false}">← Volver</a>
+  <div class="fhero">${fondo?`<img src="${esc(fondo)}" alt="">`:''}</div>
+  <div class="fcont">
+    <div class="mcov" style="--c:${esc(g.color)}">${g.cover?`<img src="${esc(g.cover)}" alt="">`:`<span class="big">${PB}</span>`}</div>
+    <span class="tag" style="--tc:${TAG[g.category]||'#888'}">${esc(g.category)}</span>
+    <h1 class="mtitle">${esc(g.title)}</h1>
+    <p class="by">${esc(g.author)}</p>
+    <div class="pills">${pills(g)}</div>
+    <h2 class="sinop">Sinopsis</h2>
+    <p class="syn">${esc(g.description)}</p>
+    <div class="acts">${link(g.officialUrl,'Descubrir proyecto','pri')}${link(g.downloadUrl,'Visitar descarga','')}${favBtn(g.id)}</div>
+    <p class="note">Directorio informativo: la plataforma no aloja archivos y los enlaces llevan a páginas de los creadores. Los juegos marcados como [DEMO] son ficticios.</p>
+  </div>`;
+}
+function openGame(id){location.hash='juego-'+id}
+
 /* Favoritos */
 #favoritos{padding:100px 5vw 40px}
 #favoritos h2{margin-bottom:16px}
@@ -191,6 +217,20 @@ dialog{margin:auto;width:min(760px,94vw);border-radius:20px;overflow:hidden;padd
   .hero .acts>*,.mbody .acts>*{width:100%}
   .pill{white-space:normal}
 }
+/* Página de ficha */
+#ficha{position:relative;padding-bottom:60px}
+.volver{position:absolute;top:84px;left:5vw;z-index:3;color:var(--wh);text-decoration:none;background:rgba(7,8,13,.75);border:1px solid var(--ln);padding:6px 14px;border-radius:99px;font-size:.9rem}
+.fhero{position:relative;height:clamp(200px,38vw,380px);background:#0a0c16;overflow:hidden;margin-top:60px}
+.fhero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top}
+.fhero::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 30%,#07080d 100%)}
+.fcont{position:relative;z-index:2;max-width:760px;margin:-90px auto 0;padding:0 5vw;text-align:center}
+.fcont .pills{justify-content:center}
+.fcont .mtitle{font-size:clamp(1.6rem,4.5vw,2.4rem)}
+.sinop{font-size:.95rem;color:var(--mu);text-transform:uppercase;letter-spacing:.12em;margin:28px 0 8px}
+.fcont .syn{max-width:none;text-align:left;font-size:1.02rem;line-height:1.8;color:#dfe3f0}
+.fcont .acts{justify-content:center}
+.fcont .note{font-size:.82rem;color:var(--mu)}
+@media (max-width:620px){.fcont .acts{flex-direction:column}.fcont .acts>*{width:100%}.volver{top:76px}}
 /* Movimiento reducido */
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
@@ -322,10 +362,7 @@ dialog{margin:auto;width:min(760px,94vw);border-radius:20px;overflow:hidden;padd
   </div>
 </main>
 
-<dialog id="dlg">
-  <button id="dclose" class="x" aria-label="Cerrar">✕</button>
-  <div id="dbody"></div>
-</dialog>
+<main id="ficha" class="view hid"><div id="fbody"></div></main>
 
 <div id="toast" role="status"></div>
 
@@ -471,6 +508,13 @@ function toggleFav(id,btn){
 /* Router por hash: #inicio, #explorar, #favoritos, #admin, #sec-* */
 function route(){
   const h=location.hash.slice(1)||'inicio';
+  if(h.startsWith('juego-')){
+    $$('.view').forEach(v=>v.classList.toggle('hid',v.id!=='ficha'));
+    $$('[data-nav]').forEach(a=>a.classList.remove('on'));
+    renderFicha(DB.find(x=>x.id===h.slice(6)));
+    window.scrollTo({top:0});
+    return;
+  }
   const target=/^(inicio|explorar|favoritos|admin)$/.test(h)?h:'inicio';
   $$('.view').forEach(v=>v.classList.toggle('hid',v.id!==target));
   $$('[data-nav]').forEach(a=>a.classList.toggle('on',a.dataset.nav===h));
@@ -570,9 +614,6 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.classList?.contains('card'))openGame(e.target.dataset.id)});
 
-$('#dclose').onclick=closeDlg;
-$('#dlg').addEventListener('click',e=>{if(e.target===$('#dlg'))closeDlg()});
-$('#dlg').addEventListener('cancel',e=>{e.preventDefault();closeDlg()});
 
 $('#navq').addEventListener('keydown',e=>{if(e.key==='Enter'){$('#q').value=e.target.value;location.hash='explorar';renderExplore()}});
 ['input','change'].forEach(ev=>$('#explorar').addEventListener(ev,e=>{if(e.target.matches('input,select'))renderExplore()}));
