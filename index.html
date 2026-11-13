@@ -303,6 +303,7 @@ dialog{margin:auto;width:min(760px,94vw);border-radius:20px;overflow:hidden;padd
         <h3 id="pTitle">Catálogo</h3>
         <div class="acts">
           <button class="pri" id="nNew">+ Nuevo juego</button>
+          <button id="pNorm">Ajustar portadas</button>
           <button id="pDl">Descargar games.js</button>
           <button id="pPub">Publicar en GitHub</button>
           <button id="pOut">Salir</button>
@@ -575,6 +576,21 @@ function showPanel(){
   $('#pPub').disabled=!S;
   renderAdmin();fillForm(null);
 }
+async function normalizarTodas(){
+  let n=0;
+  for(const g of DB) for(const f of ['cover','banner']){
+    const src=g[f];
+    if(!src||src.startsWith('data:')) continue;
+    try{
+      const r=await fetch(src); if(!r.ok) continue;
+      const blob=await r.blob();
+      g[f]=await procesarImagen(new File([blob],'img',{type:blob.type}),SIZES[f]);
+      n++;
+    }catch{}
+  }
+  renderAdmin();
+  toast(n?`${n} imagen(es) ajustadas. Pulsa «Publicar en GitHub» para guardarlas.`:'No se encontraron imágenes publicadas que ajustar.');
+}
 async function publish(){
   if(!S){toast('Conecta con GitHub para publicar.');return}
   const btn=$('#pPub');btn.disabled=true;
@@ -617,6 +633,7 @@ $('#gLogin').onclick=connect;
 $('#gLocal').onclick=()=>{S=null;showPanel()};
 $('#pOut').onclick=()=>{S=null;$('#panel').classList.add('hid');$('#login').classList.remove('hid');$('#gT').value=''};
 $('#pPub').onclick=publish;
+$('#pNorm').onclick=normalizarTodas;
 $('#pDl').onclick=()=>{
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob(['window.GAMES = '+JSON.stringify(DB,null,2)+';\n'],{type:'text/javascript'}));
