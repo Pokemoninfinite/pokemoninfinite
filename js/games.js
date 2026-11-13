@@ -16,7 +16,9 @@ window.GAMES = [
     "officialUrl": "https://merysoldier.blogspot.com/2014/01/guia-pokemon-ash-gray-castellano.html",
     "popularity": 100,
     "featured": false,
-    "tags": [],
+    "tags": [
+      "Español"
+    ],
     "cover": "assets/covers/pokemon-ashgray-mwe65z7q.png",
     "banner": "assets/banners/pokemon-ashgray-mwe65z7q.png"
   }
