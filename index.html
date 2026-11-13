@@ -206,6 +206,16 @@ dialog{margin:auto;width:min(760px,94vw);border-radius:20px;overflow:hidden;padd
 .hero-cov img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 @media (max-width:700px){.hero{flex-direction:column;align-items:flex-start}.hero-cov{position:relative;right:auto;top:auto;transform:none;width:120px;margin-bottom:18px}.hero-cov:hover{transform:none}}
 .syn{white-space:pre-line}
+.hbrand{position:relative;min-height:min(70vh,560px);display:flex;align-items:center;justify-content:center;overflow:hidden;padding:150px 6vw 60px;text-align:center;background:radial-gradient(60% 80% at 50% 40%,#1a2140,#07080d 75%)}
+.hbrand-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.9;mix-blend-mode:screen;pointer-events:none}
+.hbrand-txt{position:relative;z-index:2}
+.wordmark{font-size:clamp(2.4rem,8vw,6rem);line-height:1;letter-spacing:.04em;text-shadow:0 6px 40px rgba(0,0,0,.8)}
+.wordmark b{color:var(--blue);font-weight:800}
+.ball-o{display:inline-block;width:.78em;height:.78em;vertical-align:-.04em;margin:0 .02em}
+.ball-o svg{width:100%;height:100%;display:block;filter:drop-shadow(0 0 14px rgba(227,53,13,.6))}
+.hbrand-txt p{color:#c9cee0;margin:14px 0 22px;font-size:1.05rem}
+.hbrand .acts{justify-content:center}
+@media (max-width:700px){.hbrand{padding-top:250px;min-height:auto}}
 /* Página de ficha */
 #ficha{position:relative;padding-bottom:60px}
 .volver{position:absolute;top:84px;left:5vw;z-index:3;color:var(--wh);text-decoration:none;background:rgba(7,8,13,.75);border:1px solid var(--ln);padding:6px 14px;border-radius:99px;font-size:.9rem}
@@ -421,18 +431,15 @@ function updateFavCount(){$('#fcount').textContent=FAV.size?`(${FAV.size})`:''}
    ===================================================================== */
 function renderHome(){
   const h=DB.find(g=>g.featured)||DB[0];
-  $('#hero').innerHTML=h?`<div class="hero" style="--hc:${esc(h.color)}">
-    <div class="hero-bg">${h.banner?`<img src="${esc(h.banner)}" alt="">`:''}</div>
-    <span class="hero-pb">${PB}</span>
-    <div class="hero-cov" data-open="${esc(h.id)}" style="--c:${esc(h.color)}">${h.cover?`<img src="${esc(h.cover)}" alt="">`:''}</div>
-    <div class="hero-txt">
-      <span class="eyebrow">Destacado</span>
-      <h1>${esc(h.title)}</h1>
-      
-      <p class="lead">${esc(h.description.length>140?h.description.slice(0,140).trimEnd()+'…':h.description)}</p>
-      <div class="acts"><button class="pri" data-open="${esc(h.id)}">Ver ficha</button>${favBtn(h.id)}</div>
-    </div></div>`:'';
-  const usados=new Set(h?[h.id]:[]);
+  $('#hero').innerHTML=`<section class="hbrand">
+    <img class="hbrand-art" src="assets/banners/brand.png" alt="">
+    <div class="hbrand-txt">
+      <h1 class="wordmark">P<span class="ball-o">${PB}</span>kémon <b>INFINITE</b></h1>
+      <p>Los proyectos Pokémon creados por la comunidad</p>
+      <div class="acts"><a class="btn pri" href="#explorar">Explorar</a><a class="btn" href="#sec-new">Novedades</a></div>
+    </div>
+  </section>`;
+  const usados=new Set();
   $('#rows').innerHTML=!DB.length?`<div class="empty" style="padding:80px 5vw">${PB}<h3>Aún no hay proyectos</h3><p>Añade el primero desde el panel de administración.</p></div>`:SECS.map(([id,title,fn,sort])=>{
     const list=DB.filter(g=>!usados.has(g.id)&&fn(g)).sort((a,b)=>sort==='date'?b.releaseDate.localeCompare(a.releaseDate):b.popularity-a.popularity);
     list.forEach(g=>usados.add(g.id));
@@ -482,7 +489,7 @@ function renderFicha(g){
     <h2 class="sinop">Sinopsis</h2>
     <p class="syn">${esc(g.description)}</p>
     <div class="acts">${link(g.officialUrl,'Descubrir proyecto','pri')}${link(g.downloadUrl,'Visitar descarga','')}${favBtn(g.id)}</div>
-    <p class="note">Directorio informativo: La plataforma no aloja archivos y los enlaces llevan a páginas de los creadores. La web da créditos a los desarrolladores y los enlaces indirectos son los enlaces que no han caído y funcionan a día de hoy (comprobados).</p>
+    <p class="note">Directorio informativo: la plataforma no aloja archivos y los enlaces llevan a páginas de los creadores. Los juegos marcados como [DEMO] son ficticios.</p>
   </div>`;
 }
 function openGame(id){location.hash='juego-'+id}
