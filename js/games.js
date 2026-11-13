@@ -63,5 +63,27 @@ window.GAMES = [
     ],
     "cover": "assets/covers/pokemon-team-rocket-mwfk97in.jpg",
     "banner": "assets/banners/pokemon-team-rocket-mwfk97in.jpg"
+  },
+  {
+    "id": "pokemon-hispalis-mwfkjoge",
+    "title": "Pokémon Hispalis",
+    "author": "pabloshurmano",
+    "console": "PC",
+    "language": "Español",
+    "genre": "Aventura",
+    "category": "ROM Hack",
+    "status": "Completado",
+    "releaseDate": "2025-10-10",
+    "color": "#e3350d",
+    "description": "¡Un romhack de Pokémon con mucho arte! \n\nSumérgete en la historia de Hispalis, una Sevilla post-apocalíptica desolada tras una gran pandemia y donde ahora reinan los Pokémon.",
+    "downloadUrl": "https://hispalisfangame.com/",
+    "officialUrl": "https://hispalisfangame.com/",
+    "popularity": 100,
+    "featured": false,
+    "tags": [
+      "Español"
+    ],
+    "cover": "assets/covers/pokemon-hispalis-mwfkjoge.jpg",
+    "banner": "assets/banners/pokemon-hispalis-mwfkjoge.jpg"
   }
 ];
