@@ -41,5 +41,27 @@ window.GAMES = [
     ],
     "cover": "assets/covers/pokemon-fire-ash-mwfjkqmd.jpg",
     "banner": "assets/banners/pokemon-fire-ash-mwfjkqmd.jpg"
+  },
+  {
+    "id": "pokemon-team-rocket-mwfk97in",
+    "title": "Pokémon Team Rocket",
+    "author": "dragonsden",
+    "console": "GBA",
+    "language": "Español",
+    "genre": "Aventura",
+    "category": "ROM Hack",
+    "status": "Completado",
+    "releaseDate": "2026-10-20",
+    "color": "#e3350d",
+    "description": "¿Recuerdas cuando jugaste a Pokémon Rojo / Azul por primera vez y luchaste contra el Team Rocket? Pues ahora podrás vivir el lado opuesto siendo un integrante del Team Rocket. \n\nSube la confianza de Giovanni y escala de puesto. Lucha con los Pokémon que siempre has visto en el anime que pensabas que siempre eran los \"enemigos\" como : Zubat , Weezing , Ekans.. o por qué no , usa los todos los disponibles hasta crearte tu equipo definitivo para derrotar al \"mocoso\" de Rojo. Unos de los mayores hackroms Pokémons y que ha sido actualizado recientemente. \n\nVive las aventuras en Kanto, Archi7, Johto y Hoenn. Si siempre has querido decir ... ¿Tenéis problemas? ¡Pues escuchad nuestro lema!... Ahora podrás hacerlo en este magnifico hackroms.",
+    "downloadUrl": "https://whackahack.com/juegos/pokemon-edicion-team-rocket/",
+    "officialUrl": "",
+    "popularity": 100,
+    "featured": false,
+    "tags": [
+      "Español"
+    ],
+    "cover": "assets/covers/pokemon-team-rocket-mwfk97in.jpg",
+    "banner": "assets/banners/pokemon-team-rocket-mwfk97in.jpg"
   }
 ];
