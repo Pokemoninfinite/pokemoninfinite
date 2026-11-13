@@ -217,6 +217,10 @@ dialog{margin:auto;width:min(760px,94vw);border-radius:20px;overflow:hidden;padd
   .hero .acts>*,.mbody .acts>*{width:100%}
   .pill{white-space:normal}
 }
+/* Inicio compacto estilo catálogo */
+.hero{min-height:min(72vh,600px);align-items:flex-end;padding:130px 5vw 56px}
+.hero .lead{font-size:1rem;margin:10px 0 20px;max-width:52ch;line-height:1.6}
+@media (max-width:700px){.hero{min-height:80vh;padding-top:250px}}
 /* Página de ficha */
 #ficha{position:relative;padding-bottom:60px}
 .volver{position:absolute;top:84px;left:5vw;z-index:3;color:var(--wh);text-decoration:none;background:rgba(7,8,13,.75);border:1px solid var(--ln);padding:6px 14px;border-radius:99px;font-size:.9rem}
@@ -435,11 +439,11 @@ function renderHome(){
     <div class="hero-bg">${h.banner?`<img src="${esc(h.banner)}" alt="">`:''}</div>
     <span class="hero-pb">${PB}</span>
     <div class="hero-txt">
-      <span class="eyebrow">Destacado · ${esc(h.category)}</span>
+      <span class="eyebrow">Destacado</span>
       <h1>${esc(h.title)}</h1>
-      <p class="meta2">Por ${esc(h.author)}</p><div class="pills">${pills(h)}</div>
-      <p class="lead">${esc(h.description)}</p>
-      <div class="acts"><button class="pri" data-open="${esc(h.id)}">Descubrir</button>${favBtn(h.id)}</div>
+      
+      <p class="lead">${esc(h.description.length>140?h.description.slice(0,140).trimEnd()+'…':h.description)}</p>
+      <div class="acts"><button class="pri" data-open="${esc(h.id)}">Ver ficha</button>${favBtn(h.id)}</div>
     </div></div>`:'';
   const usados=new Set(h?[h.id]:[]);
   $('#rows').innerHTML=!DB.length?`<div class="empty" style="padding:80px 5vw">${PB}<h3>Aún no hay proyectos</h3><p>Añade el primero desde el panel de administración.</p></div>`:SECS.map(([id,title,fn,sort])=>{
