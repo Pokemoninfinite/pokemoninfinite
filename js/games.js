@@ -31,7 +31,7 @@ window.GAMES = [
     "status": "Completado",
     "releaseDate": "2017-10-06",
     "color": "#e3350d",
-    "description": "Hace unos días publicabamos el Pokémon AshGray para mi , uno de los mejores hackroms de Pokémon que hay actualmente pero le falta una cosa.. CONTINUIDAD. El proyecto fue parado por falta de tiempo del creador y otro desarrollador , tomó la idea para expandirla aún más del anime llegando desde Kanto a Alola pasando por las Islas Naranjas. El hackrom más completo si te gustó el anime. Bajo mi punto de vista , el Ashgray al ser más \"pequeño\" tiene más \"mimo\" en cuanto a la historia de los 3 pokémons iniciales según como la vive Ash (aunque aquí también las tenemos) pero de una forma más \"light\" que hace que no se sienta igual pero te llevas el poder jugar las aventuras de Ash hasta Alola.",
+    "description": "Hace unos días publicabamos el Pokémon AshGray para mi , uno de los mejores hackroms de Pokémon que hay actualmente pero le falta una cosa.. CONTINUIDAD. \n\nEl proyecto fue parado por falta de tiempo del creador y otro desarrollador , tomó la idea para expandirla aún más del anime llegando desde Kanto a Alola pasando por las Islas Naranjas. \n\nEl hackrom más completo si te gustó el anime. Bajo mi punto de vista , el Ashgray al ser más \"pequeño\" tiene más \"mimo\" en cuanto a la historia de los 3 pokémons iniciales según como la vive Ash (aunque aquí también las tenemos) pero de una forma más \"light\" que hace que no se sienta igual pero te llevas el poder jugar las aventuras de Ash hasta Alola.",
     "downloadUrl": "https://yosoykike.blogspot.com/2026/07/pokemon-fire-ash-rpg-maker.html",
     "officialUrl": "",
     "popularity": 10,
